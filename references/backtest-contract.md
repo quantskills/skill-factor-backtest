@@ -115,6 +115,64 @@ Non-matrix files:
 Ticker columns must be convertible to integers because the engine calls
 `rename(columns=int)` when loading market matrices.
 
+## Config Files
+
+Users can customize strategy behaviour and default paths by editing the two
+INI files under `scripts/config/`.
+
+### `backtestconfig.ini` — strategy parameters
+
+Each `[section]` defines a named strategy. The default strategy is
+`[long_only_equal_weight]`. The engine reads the section corresponding to
+`--strategy` (or the default when `--strategy` is omitted).
+
+```ini
+[long_only_equal_weight]
+longx=200
+stock_pool=whole
+trade_price_type=twap
+buy_sell_shift=1
+transaction=1.4
+benchmark=benchmark
+turnover_mode=flex
+keep=0.7
+```
+
+| Key | Meaning |
+| --- | --- |
+| `longx` | Maximum number of long holdings. |
+| `stock_pool` | `whole` disables stock-pool filtering; any other value loads `stock_pool/<value>.parquet`. |
+| `trade_price_type` | Price source metadata (`twap`; market prices are read from the `--data-root` files). |
+| `buy_sell_shift` | Signal/trade delay in trading days. `1` means next-day execution. |
+| `transaction` | Round-trip cost in per-mille (‱); split half buy, half sell. |
+| `benchmark` | Benchmark file name under `Benchmark/<name>.parquet`. |
+| `turnover_mode` | `flex` retains existing holdings first, then fills with top-ranked names. |
+| `keep` | Fraction of portfolio value retained before rebalancing in `flex` mode. |
+
+Any strategy value can be overridden at runtime with `--override key=value`
+(repeatable). For example:
+
+```bash
+--override longx=100 --override benchmark=hs300
+```
+
+### `pathconfig.ini` — path defaults
+
+```ini
+[PATH]
+BASE_PATH_PQ=.
+OPT_PATH=.
+```
+
+| Key | Meaning |
+| --- | --- |
+| `BASE_PATH_PQ` | Default market-data root; overridden by `--data-root`. |
+| `OPT_PATH` | Default optimizer/attribution root; overridden by `--optimizer-root`. |
+
+In normal use these are left as `.` and the CLI arguments supply the real
+paths. Edit `pathconfig.ini` only if you want to hard-code a fixed data root
+for repeated local runs.
+
 ## Parameters
 
 Common CLI parameters:

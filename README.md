@@ -9,14 +9,15 @@
 
 ## 这是什么
 
-`skill-factor-backtest` 是一个通用横截面交易因子回测技能。它用于回答这类问题：
+`skill-factor-backtest` 是一个通用横截面因子回测技能。给定因子信号与行情数据，它产出一份完整的量化评估：
 
-- 这个因子在给定交易池和行情数据上是否有稳定 IC？
-- 按因子值分组后，各组收益是否单调？
-- long-only 等权组合的净值、回撤、换手和胜率如何？
-- 回测结果是否可以生成一份包含线性、非线性、自相关和收益诊断的 PDF 报告？
+- **信号质量** — 多个 forward window 上的横截面 rank IC。
+- **分组单调性** — 按因子值排序后的十分组组合收益。
+- **组合表现** — long-only 等权净值、benchmark 对冲收益、回撤、换手率和胜率。
+- **交易明细** — 每日成交与持仓记录。
+- **PDF 报告** — 可选诊断报告，包含线性、非线性、自相关与收益拆解。
 
-本技能不绑定某一个市场。只要用户数据满足输入格式，股票、ETF、期货、加密资产或其他可交易标的都可以使用。内置 `data/test_data/` 只用于检查技能是否能正常运行；真实分析必须使用用户自己的数据。
+引擎不绑定市场：只要数据满足输入格式，股票、ETF、期货、加密资产或其他可交易标的都可使用。内置 `data/test_data/` 仅用于验证技能是否能正常运行；真实分析必须使用你自己的数据。
 
 ## 必要输入
 
@@ -41,6 +42,17 @@
 | 因子列 | 数值越高默认越优；如果数值越低越优，使用 `--reverse`。 |
 
 行情数据根目录需要包含日历、价格、复权因子、交易状态、排除 mask、benchmark 等文件。完整格式见 [references/backtest-contract.md](references/backtest-contract.md)。
+
+## 配置
+
+策略参数与默认路径通过 `scripts/config/` 下的两个 INI 文件设置：
+
+| 文件 | 用途 |
+| --- | --- |
+| `backtestconfig.ini` | 策略默认值：`longx`、`benchmark`、`transaction`、`turnover_mode`、`keep` 等。编辑 `[long_only_equal_weight]` 段或新增 `[section]` 来定义自定义策略。 |
+| `pathconfig.ini` | `--data-root` 与 `--optimizer-root` 的兜底路径；通常保留 `.` 并通过 CLI 参数覆盖。 |
+
+所有策略参数都可在运行时通过 `--override key=value` 覆盖。
 
 ## 快速运行
 

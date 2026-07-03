@@ -2,26 +2,33 @@
 
 [简体中文](README.md) | **English**
 
-> Run a cross-sectional long-only factor backtest on user-provided trading data, with IC, group-return, portfolio, transaction, holding, and PDF diagnostic outputs.
+> Run a cross-sectional factor backtest on user-provided trading data, with IC, group-return, portfolio, transaction, holding, and PDF diagnostic outputs.
 
 ![type](https://img.shields.io/badge/type-agent--skill-blue)
 ![license](https://img.shields.io/badge/license-GPLv3-blue)
 
 ## What This Is
 
-`skill-factor-backtest` is a general cross-sectional trading-factor backtest skill. Use it to answer questions such as:
+`skill-factor-backtest` is a general-purpose cross-sectional factor backtest
+skill. Given a factor signal and market data, it produces a complete
+quantitative evaluation:
 
-- Does this factor have stable IC on the user's trading universe?
-- Are group returns monotonic after sorting by factor value?
-- How does a long-only equal-weight portfolio perform after costs?
-- What are the drawdown, turnover, win-rate, transaction, and holding diagnostics?
-- Can the run produce a PDF report with linear, nonlinear, autocorrelation, and return diagnostics?
+- **Signal quality** — cross-sectional rank IC across multiple forward windows.
+- **Group monotonicity** — decile portfolio returns sorted by factor value.
+- **Portfolio performance** — long-only equal-weight NAV, benchmark-hedged
+  returns, drawdown, turnover, and win-rate.
+- **Trade diagnostics** — per-day transaction and holding logs.
+- **PDF report** — optional diagnostic report with linear, nonlinear,
+  autocorrelation, and return decomposition.
 
-The skill is not tied to one market. It can be used for stocks, ETFs, futures, crypto assets, or other instruments when the data matches the required format. The bundled `data/test_data/` fixture is only for checking that the skill runs; real analysis must use the user's own data.
+The engine is market-agnostic: it works with stocks, ETFs, futures, crypto, or
+any instrument whose data follows the required schema. The bundled
+`data/test_data/` fixture exists only to verify the skill runs correctly; real
+analysis must use your own data.
 
 ## Required Inputs
 
-A real backtest requires all three inputs:
+A backtest run requires all three inputs:
 
 | Input | Argument | Description |
 | --- | --- | --- |
@@ -29,9 +36,9 @@ A real backtest requires all three inputs:
 | Factor column | `--factor-column` | Numeric column to rank and trade; one factor per run. |
 | Market data root | `--data-root` | Parquet market-data root aligned to the factor dates and tickers. |
 
-`--input-file` contains only factor signals. `--data-root` contains the trading calendar, prices, masks, benchmark, and other market data required to run a real backtest. A real backtest cannot run without `--data-root`; only `--test-data` mode fills it from the checked-in test manifest.
+`--input-file` contains only factor signals. `--data-root` contains the trading calendar, prices, masks, benchmark, and other market data required to run a real backtest.
 
-If any of these inputs are missing, the agent should ask the user for the missing file, path, or column. Do not use the bundled test data unless the user explicitly asks for it.
+If any of these inputs are missing, the agent should ask the user for the missing file, path, or column.
 
 Factor data must contain at least:
 
@@ -42,6 +49,17 @@ Factor data must contain at least:
 | factor column | Numeric signal. Higher values are better by default; use `--reverse` when lower values are better. |
 
 The market-data root must contain calendar, price, adjustment, tradability, exclusion mask, and benchmark files. See [references/backtest-contract.md](references/backtest-contract.md) for the full schema.
+
+## Configuration
+
+Strategy parameters and default paths are set in two INI files under `scripts/config/`:
+
+| File | Purpose |
+| --- | --- |
+| `backtestconfig.ini` | Strategy defaults: `longx`, `benchmark`, `transaction`, `turnover_mode`, `keep`, etc. Edit `[long_only_equal_weight]` or add new `[sections]` for custom strategies. |
+| `pathconfig.ini` | Fallback paths for `--data-root` and `--optimizer-root`; normally left as `.` and overridden via CLI. |
+
+Any strategy value can be overridden at runtime with `--override key=value`.
 
 ## Quick Run
 
@@ -116,7 +134,7 @@ Core outputs include:
 
 ## Test Fixture
 
-Use bundled test data only when the user explicitly asks to test the skill:
+Use bundled test data only when you need to test the skill:
 
 ```bash
 python3 scripts/run_factor_backtest.py --test-data
