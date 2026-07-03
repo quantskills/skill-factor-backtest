@@ -1,0 +1,4 @@
+interface:
+  display_name: "Factor Backtest"
+  short_description: "Run the factor backtest on user-provided trading data"
+  default_prompt: "Use $factor-backtest to run this user-provided factor file, factor column, and market-data root through the backtest workflow, then inspect the timestamped outputs."

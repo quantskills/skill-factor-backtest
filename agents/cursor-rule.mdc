@@ -1,0 +1,25 @@
+---
+description: Use the Factor Backtest skill to run or explain the schema-compatible trading-factor backtest engine.
+alwaysApply: false
+---
+
+# Factor Backtest Skill
+
+When the user asks to run a factor backtest, validate backtest inputs, inspect
+backtest outputs, or explain the backtest behavior:
+
+1. Read `.cursor/skills/factor-backtest/SKILL.md`.
+2. Read `.cursor/skills/factor-backtest/references/backtest-contract.md`.
+3. Do not edit `.cursor/skills/factor-backtest/scripts/backtest_engine/BackTest.py`
+   unless the user explicitly asks for source-code changes.
+4. For an explicit test-data run, use checked-in Yahoo-backed data under `.cursor/skills/factor-backtest/data/test_data`
+   and run `python3 .cursor/skills/factor-backtest/scripts/run_factor_backtest.py --test-data`.
+5. Treat the checked-in test data as a fixture only. For real backtests, the user
+   must provide their own data; run `scripts/run_factor_backtest.py` with
+   `--input-file`, `--factor-column`, and `--data-root`; omit `--output-dir` to
+   use `output/run_YYYYMMDD_HHMMSS/`.
+6. Use `--report` only when the existing `scripts/factor_report_generate`
+   Python modules and auxiliary datasets are available.
+7. Report generated files, key metrics from `stats.csv`, and any missing-data
+   or environment assumptions. Run `make_test_data.py` only when intentionally
+   refreshing the saved Yahoo-backed test fixture; it requires network access.
