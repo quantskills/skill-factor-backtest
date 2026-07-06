@@ -43,6 +43,22 @@ For a real run, all three are required:
 If the user's request does not provide these three, ask for the missing
 file/path/column. Do not substitute test data.
 
+## Agent Run Checklist
+
+Use this checklist for every run:
+
+1. Confirm mode: user-data run or explicit test-fixture run.
+2. For user data, confirm `--input-file`, `--factor-column`, and `--data-root`.
+3. Check that the factor input exists and contains `date`, `ticker`, and the
+   selected factor column.
+4. Check that `--data-root` contains the required Parquet files and the selected
+   benchmark file.
+5. Run `scripts/run_factor_backtest.py` and inspect the printed JSON summary.
+6. Verify that every file in `expected_outputs` exists under `output_dir`.
+7. If `--report` was requested, verify that `report_pdf` exists.
+8. Report the mode, output directory, key metrics, skipped optional sections, and
+   assumptions. Do not turn fixture output into research evidence.
+
 ## Factor Input Schema
 
 Factor data must contain at least:
@@ -303,3 +319,16 @@ production universe.
 - Limit-up/limit-down checks use a fixed `LOCKED_LIMIT = 0.095`; provide
   masks/prices that make sense for the user's trading universe.
 - Pure-alpha mode needs extra optimizer or attribution files.
+
+## Registry And Packaging Notes
+
+The skill should stay registry-compatible:
+
+- Keep `output/` and runtime caches ignored.
+- Run Python syntax checks before packaging:
+  `find scripts -name '*.py' -print0 | xargs -0 python3 -m py_compile`.
+- Large fixture or font files can trigger registry git-hygiene warnings. Keep
+  them only when they are required for deterministic fixture/report behavior,
+  and avoid adding extra bundled data.
+- If the checked-in fixture changes, refresh `data/test_data/manifest.json` and
+  rerun both `--test-data` and `--test-data --report`.

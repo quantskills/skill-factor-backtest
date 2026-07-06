@@ -36,9 +36,9 @@ A backtest run requires all three inputs:
 | Factor column | `--factor-column` | Numeric column to rank and trade; one factor per run. |
 | Market data root | `--data-root` | Parquet market-data root aligned to the factor dates and tickers. |
 
-`--input-file` contains only factor signals. `--data-root` contains the trading calendar, prices, masks, benchmark, and other market data required to run a real backtest.
+`--input-file` contains only factor signals. `--data-root` contains the trading calendar, prices, masks, benchmark, and other market data required to run a real backtest. A real backtest cannot run without `--data-root`; only explicit `--test-data` mode fills paths from the bundled fixture manifest.
 
-If any of these inputs are missing, the agent should ask the user for the missing file, path, or column.
+If any of these inputs are missing, the agent should ask the user for the missing file, path, or column. It should not substitute `data/test_data/` unless the user explicitly asks to test the skill.
 
 Factor data must contain at least:
 
@@ -132,6 +132,17 @@ Core outputs include:
 | `holdings.csv` | Holding records. |
 | `<factor>_factor_report.pdf` | PDF diagnostic report when `--report` is used. |
 
+## Verification
+
+A run is complete only after the agent checks the printed JSON summary and the
+files on disk:
+
+- `output_dir` exists and contains every file listed in `expected_outputs`.
+- `stats.csv` is present for the default `savemode=3` run.
+- `transaction.csv` and `holdings.csv` are present for `savemode=3`.
+- `report_pdf` exists when `--report` is used.
+- Missing real-run inputs fail fast instead of falling back to the fixture.
+
 ## Test Fixture
 
 Use bundled test data only when you need to test the skill:
@@ -146,6 +157,14 @@ python3 scripts/run_factor_backtest.py --test-data --report
 ```bash
 python3 scripts/make_test_data.py
 ```
+
+## Registry Notes
+
+The QuantSkills registry checks for required docs, valid frontmatter, Python
+syntax, link health, secrets, and git hygiene. Keep `output/` ignored. Large
+checked-in assets such as fixture data or fonts should be intentional and
+documented; avoid adding more bundled market data unless the fixture contract
+requires it.
 
 ## Disclaimer
 

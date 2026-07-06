@@ -26,10 +26,12 @@ When the user asks to run or explain a backtest:
      --data-root <BackTestData_pq>
 6. Add --report only when the existing scripts/factor_report_generate Python
    modules and auxiliary datasets are available.
-7. Report the generated output/run_YYYYMMDD_HHMMSS directory and key stats from
-   stats.csv. Run make_test_data.py only when the checked-in Yahoo-backed
-   test fixture dataset intentionally needs to be refreshed; it requires network
-   access.
+7. Treat the printed JSON summary as the run contract: verify output_dir, every
+   file in expected_outputs, and report_pdf when --report is used.
+8. Report the generated output/run_YYYYMMDD_HHMMSS directory, key stats from
+   stats.csv, skipped optional report sections, and assumptions. Run
+   make_test_data.py only when the checked-in Yahoo-backed test fixture dataset
+   intentionally needs to be refreshed; it requires network access.
 ```
 
 Runtime placement notes:

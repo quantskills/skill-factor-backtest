@@ -20,6 +20,9 @@ backtest outputs, or explain the backtest behavior:
    use `output/run_YYYYMMDD_HHMMSS/`.
 6. Use `--report` only when the existing `scripts/factor_report_generate`
    Python modules and auxiliary datasets are available.
-7. Report generated files, key metrics from `stats.csv`, and any missing-data
-   or environment assumptions. Run `make_test_data.py` only when intentionally
-   refreshing the saved Yahoo-backed test fixture; it requires network access.
+7. Treat the printed JSON summary as the run contract: verify `output_dir`, every
+   file in `expected_outputs`, and `report_pdf` when `--report` is used.
+8. Report generated files, key metrics from `stats.csv`, skipped optional report
+   sections, and any missing-data or environment assumptions. Run
+   `make_test_data.py` only when intentionally refreshing the saved Yahoo-backed
+   test fixture; it requires network access.

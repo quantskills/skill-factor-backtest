@@ -125,6 +125,16 @@ python3 scripts/generate_factor_report.py \
 | `holdings.csv` | 持仓记录。 |
 | `<factor>_factor_report.pdf` | 使用 `--report` 时生成的 PDF 诊断报告。 |
 
+## 验证标准
+
+Agent 不能只看终端进度条来判断完成，必须检查 JSON 摘要和磁盘文件：
+
+- `output_dir` 存在，并包含 `expected_outputs` 列出的全部文件。
+- 默认 `savemode=3` 时存在 `stats.csv`。
+- 默认 `savemode=3` 时存在 `transaction.csv` 和 `holdings.csv`。
+- 使用 `--report` 时存在 JSON 中的 `report_pdf`。
+- 真实回测缺少必要输入时应快速失败并询问用户，不能退回内置测试数据。
+
 ## 技能自测数据
 
 只有当用户明确要求“测试技能”或“运行 test data”时，才使用内置测试数据：
@@ -139,6 +149,12 @@ python3 scripts/run_factor_backtest.py --test-data --report
 ```bash
 python3 scripts/make_test_data.py
 ```
+
+## Registry 注意事项
+
+QuantSkills registry 会检查必要文档、frontmatter、Python 语法、链接、密钥和
+git hygiene。保持 `output/` 被忽略。较大的内置 fixture 或字体文件必须是有意保留
+并在文档中说明的资产；除非测试数据 contract 需要，不要继续添加更多打包行情数据。
 
 ## 免责声明
 

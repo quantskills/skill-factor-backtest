@@ -115,6 +115,24 @@ auxiliary paths, `--pure-alpha`, and `--optimizer-root`.
    assumptions such as factor direction, benchmark, holding count, and date
    range.
 
+## Verification Checklist
+
+Before calling a run complete, verify the concrete outputs instead of relying on
+console progress alone:
+
+- User-data run: command exits with code 0 and prints JSON containing
+  `input_file`, `factor_column`, `data_root`, `output_dir`, and
+  `expected_outputs`.
+- Raw backtest outputs: every file listed in `expected_outputs` exists in the
+  printed `output_dir`.
+- PDF run: when `--report` is requested, the JSON includes `report_pdf` and the
+  PDF exists.
+- Missing-input path: a real run without `--input-file`, `--factor-column`, or
+  `--data-root` must fail fast and ask for the missing user data. It must not
+  substitute `data/test_data/`.
+- Skill self-test: `python3 scripts/run_factor_backtest.py --test-data` verifies
+  the checked-in fixture only; `--test-data --report` verifies the report path.
+
 ## How The Backtest Works
 
 - `load_data()` reads factor data, filters by `--timespan` when provided,
@@ -216,6 +234,9 @@ The engine writes results into `output/run_<timestamp>/` by default:
   correctness test.
 - Missing optional report comparison or Barra inputs should leave the
   corresponding report sections empty or skipped.
+- Registry packaging may warn on large data or font files. Keep generated
+  `output/` ignored, check large checked-in fixture/font assets deliberately,
+  and prefer documenting why they are required over adding more bundled data.
 
 ## Reference Files
 
