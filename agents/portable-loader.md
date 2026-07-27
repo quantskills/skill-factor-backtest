@@ -36,7 +36,8 @@ When the user asks to run or explain a backtest:
 
 Runtime placement notes:
 
-- Codex: keep the folder under a Codex skill path and invoke `$factor-backtest`.
+- Codex: keep the folder under a Codex skill path. Natural-language backtest
+  requests can invoke it implicitly; `$factor-backtest` remains the explicit form.
 - Claude Code: keep the folder under a Claude skill path and invoke `$factor-backtest`.
 - Cursor: copy this folder to `.cursor/skills/factor-backtest` and enable
   `agents/cursor-rule.mdc`.

@@ -45,7 +45,15 @@ mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
 rsync -a --exclude '__pycache__' ./ "${CODEX_HOME:-$HOME/.codex}/skills/factor-backtest/"
 ```
 
-Use:
+After restarting Codex, natural-language requests can invoke the skill
+implicitly:
+
+```text
+Backtest this factor file against my market-data root and report NAV, drawdown,
+turnover, and hedged performance.
+```
+
+Explicit invocation remains available:
 
 ```text
 Use $factor-backtest to run this factor CSV through the factor backtest workflow.
@@ -80,6 +88,9 @@ root:
 git status --short --ignored
 find scripts -name '*.py' -print0 | xargs -0 python3 -m py_compile
 ```
+
+Keep Codex-compatible frontmatter in `SKILL.md`. QuantSkills community
+publication metadata is stored separately in `quant-skill.yaml`.
 
 Keep generated `output/` files ignored. The fixture data and report fonts are
 intentional assets for deterministic test/report behavior; avoid adding more

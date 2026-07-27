@@ -300,9 +300,9 @@ class TradingSystem(object):
         temp['week']=temp.index.week
         temp['month']=temp['year'].astype(str)+'-'+temp['month'].astype(str).str.zfill(2)
         temp['week']=temp['year'].astype(str)+'-'+temp['week'].astype(str).str.zfill(2)
-        week_series=temp.groupby('week')['hedged_unrealized_pnl'].apply(lambda x : (x[-1]-x[0])/x[0] )
+        week_series=temp.groupby('week')['hedged_unrealized_pnl'].apply(lambda x : (x.iloc[-1]-x.iloc[0])/x.iloc[0] )
         week_winrate=len(week_series[week_series>0])/len(week_series)
-        month_series=temp.groupby('month')['hedged_unrealized_pnl'].apply(lambda x : (x[-1]-x[0])/x[0])
+        month_series=temp.groupby('month')['hedged_unrealized_pnl'].apply(lambda x : (x.iloc[-1]-x.iloc[0])/x.iloc[0])
         month_winrate=len(month_series[month_series>0])/len(month_series)
         plt.figure(figsize=(12, 4))
         plt.title(f'月超额收益 月胜率为：{month_winrate*100 :.2f}% 周胜率为：{week_winrate*100 :.2f}%')

@@ -1,0 +1,27 @@
+quantSkills:
+  organization: QuantSkills
+  organization_url: https://github.com/quantskills
+  repository: skill-factor-backtest
+  repository_url: https://github.com/quantskills/skill-factor-backtest
+  project_type: skill
+  collection: factor-tools
+  category: tooling
+  tags:
+    - backtest
+    - factor-validation
+    - trading-data
+    - cross-sectional
+    - long-only
+    - test-fixture
+  platforms:
+    - claude-code
+    - codex
+    - cursor
+    - openclaw
+  language: zh-en
+  status: draft
+  validation_level: runnable
+  maintainer_type: community
+  requires: []
+  summary_zh: 对用户提供的交易因子和行情数据执行通用横截面回测；内置测试数据仅用于技能自测。
+  summary_en: Run a cross-sectional factor backtest on schema-compatible trading data; bundled test data is only for skill validation.

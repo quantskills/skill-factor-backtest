@@ -1,13 +1,15 @@
 ---
 name: factor-backtest
 description: >-
-  Cross-sectional trading-factor backtest skill for schema-compatible user
-  data. Use when an agent needs to run or explain a long-only factor backtest,
-  validate factor and market-data inputs, inspect timestamped outputs, generate
-  a PDF diagnostic report, or explicitly verify the skill pipeline with the
-  checked-in test fixture.
+  Run and explain cross-sectional trading-factor backtests on schema-compatible
+  factor signals and market data. Use when Codex needs to validate backtest
+  inputs; calculate returns, NAV, drawdown, holdings, turnover, benchmark or
+  hedged performance; generate a PDF diagnostic report; or explicitly verify
+  the checked-in test fixture. Also use for Chinese requests such as
+  因子回测、收益验证、净值、回撤、持仓、换手、对冲收益或回测报告.
 license: GPL-3.0-only
 metadata:
+  short-description: Backtest factor signals and evaluate portfolio performance
   organization: QuantSkills
   organization_url: https://github.com/quantskills
   repository: skill-factor-backtest
@@ -18,33 +20,6 @@ metadata:
   creator_url: https://github.com/davideliu
   maintainer: davideliu
   maintainer_url: https://github.com/davideliu
-quantSkills:
-  organization: QuantSkills
-  organization_url: https://github.com/quantskills
-  repository: skill-factor-backtest
-  repository_url: https://github.com/quantskills/skill-factor-backtest
-  project_type: skill
-  collection: factor-tools
-  category: tooling
-  tags:
-    - backtest
-    - factor-validation
-    - trading-data
-    - cross-sectional
-    - long-only
-    - test-fixture
-  platforms:
-    - claude-code
-    - codex
-    - cursor
-    - openclaw
-  language: zh-en
-  status: draft
-  validation_level: runnable
-  maintainer_type: community
-  requires: []
-  summary_zh: 对用户提供的交易因子和行情数据执行通用横截面回测；内置测试数据仅用于技能自测。
-  summary_en: Run a cross-sectional factor backtest on schema-compatible trading data; bundled test data is only for skill validation.
 ---
 
 # Factor Backtest
