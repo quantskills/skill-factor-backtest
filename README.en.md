@@ -166,6 +166,15 @@ checked-in assets such as fixture data or fonts should be intentional and
 documented; avoid adding more bundled market data unless the fixture contract
 requires it.
 
+## Changelog
+
+### v0.1.1 - 2026-10-28
+
+- Fix delisted stocks getting stuck in holdings. Positions in permanently
+  closed (e.g. delisted) tickers are now force-liquidated at their last finite
+  price (written off to 0 when no price exists), so they no longer freeze NAV or
+  occupy a `longx` holding slot. Temporary suspensions are unaffected.
+
 ## Disclaimer
 
 This repository organizes research workflows only. Not investment advice.

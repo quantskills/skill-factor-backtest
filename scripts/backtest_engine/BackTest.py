@@ -178,6 +178,7 @@ class TradingSystem(object):
         self.mindvol = mindvol
         self._risk_return_attributes=[]
         self._explo=[]
+        self._forward_any_open=None
 
 
     def run(self):
@@ -575,6 +576,7 @@ class TradingSystem(object):
         self.benchmark_balance = pd.DataFrame(1,index=self.date_list,columns=['ratio'])
         for date1 in tqdm(self.date_list):
             self._adjustVolume(date1)
+            self._force_liquidate_delisted(date1)
             buy_order,sell_order=self._Buy_Sell(date1)
             self._balance(date1)
             if self.pure_alpha and date1!=self.start_date:
@@ -725,6 +727,45 @@ class TradingSystem(object):
 
         return buy_order,sell_order
 
+    def _force_liquidate_delisted(self, date):
+        """Liquidate any held stock that will never trade again (e.g. delisted).
+
+        Such a stock can no longer be sold through the normal order path because
+        ``can_sell`` requires ``mask_isopen == True``, and its price would otherwise
+        freeze at the last finite value forever. We force-sell it here at its last
+        finite price (falling back to a full write-off if no price exists).
+        """
+        holdings = self.trader.holdings
+        held = holdings[holdings['volume'] > 0]
+        if held.empty or self._forward_any_open is None:
+            return pd.DataFrame()
+
+        future_open = self._forward_any_open.loc[date]
+        permanently_closed = ~future_open.reindex(held.index).fillna(False).astype(bool)
+        delisted = held.index[permanently_closed]
+        if len(delisted) == 0:
+            return pd.DataFrame()
+
+        price = pd.to_numeric(held.loc[delisted, 'price_current'], errors='coerce')
+        price = price.where(np.isfinite(price), 0.0).fillna(0.0)
+        volume = pd.to_numeric(held.loc[delisted, 'volume'], errors='coerce').fillna(0).astype(float)
+        adj_factor = pd.to_numeric(held.loc[delisted, 'adj_factor'], errors='coerce').fillna(1.0).astype(float)
+
+        sell = pd.DataFrame({
+            'ticker': delisted.tolist(),
+            'B/S': 'sell',
+            'volume': volume.values,
+            'trade_price': price.values,
+            'adj_factor': adj_factor.values,
+            'amount': 0.0,
+            'transaction': 0.0,
+            'date': date,
+        })
+        sell['amount'] = sell['volume'] * sell['trade_price']
+        sell['transaction'] = sell['amount'] * self.sell_transaction
+        self.trader.sell(sell)
+        return sell
+
     def _adjustVolume(self,date):
         date_adj = self.adjfactor.loc[date,self.trader.holdings.index]
         mask = (np.isfinite(date_adj)) & (date_adj != self.trader.holdings['adj_factor'])
@@ -827,6 +868,10 @@ class TradingSystem(object):
             self.mask_inpool = pd.DataFrame(True, index=self.date_list, columns=self.ticker_list)
         self.can_buy=(self.mask_isopen)&(~self.zt)
         self.can_sell=(self.mask_isopen)&(~self.dt)
+        # Forward "open on this date or any later date" mask, used to detect
+        # permanently closed (e.g. delisted) tickers so they can be liquidated.
+        mask_open = self.mask_isopen.reindex(index=self.date_list).fillna(False).astype(bool)
+        self._forward_any_open = mask_open.iloc[::-1].cummax().iloc[::-1]
 
     def preclean_data(self):
         augmented_date_list = sorted(list(set(self.date_list).union(self.data_date_list)))
